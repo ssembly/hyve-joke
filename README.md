@@ -1,6 +1,6 @@
-# Hyve Joke
+# Hyve Jokes
 
-## Running
+## Running the application
 
 Before you can run this project, you must run a clean install maven command. This will build the jar file that's needed to run the application.
 
@@ -29,8 +29,10 @@ The following sample requests can be used to run the available endpoints and sta
 [Sample HTTP Payloads](Sample%20payloads.http)
 
 And the following users have been created for testing.
+```
 id;username;first_name;last_name
 1;kgomotso;Kgomotso;Mfubha
 2;skye;Skye;Hyve
 3;didier;Didier;Hyve
+```
 
