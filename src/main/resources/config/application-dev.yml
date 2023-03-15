@@ -1,0 +1,25 @@
+
+logging:
+  level:
+    ROOT: INFO
+    tech.jhipster: INFO
+    org.hibernate.SQL: DEBUG
+    com.hyve.fun: INFO
+
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:h2:file:./target/h2db/db/joke;DB_CLOSE_DELAY=-1;MODE=MYSQL;NON_KEYWORDS=value
+    username: joke
+    password:
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+  h2:
+    console:
+      enabled: false
+  liquibase:
+    contexts: dev
+
+server:
+  port: 8081

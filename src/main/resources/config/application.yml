@@ -1,0 +1,45 @@
+
+spring:
+  application:
+    name: joke
+  profiles:
+    active: #spring.profiles.active#
+    group:
+      dev:
+        - dev
+  messages:
+    basename: i18n/messages
+  main:
+    allow-bean-definition-overriding: true
+  task:
+    execution:
+      thread-name-prefix: joke-task-
+      pool:
+        core-size: 2
+        max-size: 50
+        queue-capacity: 10000
+    scheduling:
+      thread-name-prefix: joke-scheduling-
+      pool:
+        size: 2
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+
+jhipster:
+  clientApp:
+    name: 'jokeApp'
+  security:
+    authentication:
+      jwt:
+        base64-secret: NDgyMThkMzVjOTEzN2M1Njk1ZjkxMjUyZGFhZDI5MDM3ODkxODg2NTdlODdmMTY2YmZkMGIxZjA5YzYxZjQ2YjdkNjIyNzIwMjBkMTcwNzcxODZiNGQ3N2YxZTcwNGM2ZWM4NzdjMjIxMmI2ZTdhMDQxYTZhMmVmNDI3MTEyY2M=
+        token-validity-in-seconds: 86400
+        token-validity-in-seconds-for-remember-me: 2592000
+
+joke:
+  time-window: 10 #in minutes
+  api:
+    url: https://api.chucknorris.io/jokes/search?query=DEV

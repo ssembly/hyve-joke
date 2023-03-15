@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="kmfubha" id="1">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="user_joke_id" type="BIGINT"/>
+        </createTable>
+
+        <loadData encoding="UTF-8"
+                  file="config/liquibase/users.csv"
+                  separator=";"
+                  tableName="users">
+        </loadData>
+    </changeSet>
+
+    <changeSet author="kmfubha" id="2">
+        <createTable tableName="joke">
+            <column name="id" type="VARCHAR(255)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="message" type="VARCHAR(1000)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="kmfubha" id="3">
+        <createTable tableName="user_joke">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="joke_id" type="VARCHAR(255)"/>
+            <column name="active" type="BIT"/>
+            <column name="created_at" type="timestamp"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

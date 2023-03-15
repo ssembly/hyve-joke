@@ -1,0 +1,15 @@
+GET http://localhost:8081/api/jokes/retrieve
+Accept: application/json
+
+###
+
+GET http://localhost:8081/api/jokes/random/5
+Accept: application/json
+Authorization: 8 ## UserId
+
+###
+
+GET http://localhost:8081/api/jokes/stats
+Accept: application/json
+
+###
