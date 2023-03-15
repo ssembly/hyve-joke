@@ -38,6 +38,7 @@ public class JokeService {
     private final JokeRepository jokeRepository;
     private final UserJokeRepository userJokeRepository;
 
+    @Transactional
     public List<Joke> retrieveAndSaveJokes() throws NoJokeException {
         final Joke[] retrievedJokes = retrieveJokes();
         jokeRepository.deleteAll();
@@ -73,40 +74,60 @@ public class JokeService {
         final List<UserJoke> userJokes = userJokeRepository.findAll();
         final List<JokeStat> jokeStats = new ArrayList<>();
         userJokes.forEach(userJoke -> {
-            if (jokeStats.isEmpty() || jokeStats.stream().noneMatch(jokeStat -> jokeStat.getJoke().getId().equals(userJoke.getJoke().getId()))) {
-                try {
-                    jokeStats.add(new JokeStat(userJoke.getJoke(), 1, mapToUserStat(userJoke.getUserId(), null)));
-                } catch (OutOfJokeException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                jokeStats.forEach(jokeStat -> {
-                    if (jokeStat.getJoke().getId().equals(userJoke.getJoke().getId())) {
-                        jokeStat.setJokeCount(jokeStat.getJokeCount() + 1);
-                        try {
-                            jokeStat.setUserStats(mapToUserStat(userJoke.getUserId(), jokeStat.getUserStats()));
-                        } catch (OutOfJokeException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-            }
+            createOrUpdateJokeStat(jokeStats, userJoke);
         });
         return jokeStats;
     }
 
+    private void createOrUpdateJokeStat(List<JokeStat> jokeStats, UserJoke userJoke) {
+        if (jokeStats.isEmpty() || jokeStats.stream().noneMatch(jokeStat -> jokeStat.getJoke().getId().equals(userJoke.getJoke().getId()))) {
+            createNewJokeStat(jokeStats, userJoke);
+        } else {
+            jokeStats.forEach(jokeStat -> {
+                updateExistingJokeStat(userJoke, jokeStat);
+            });
+        }
+    }
+
+    private void updateExistingJokeStat(UserJoke userJoke, JokeStat jokeStat) {
+        if (jokeStat.getJoke().getId().equals(userJoke.getJoke().getId())) {
+            jokeStat.setJokeCount(jokeStat.getJokeCount() + 1);
+            try {
+                jokeStat.setUserStats(mapToUserStat(userJoke.getUserId(), jokeStat.getUserStats()));
+            } catch (OutOfJokeException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void createNewJokeStat(List<JokeStat> jokeStats, UserJoke userJoke) {
+        try {
+            jokeStats.add(new JokeStat(userJoke.getJoke(), 1, mapToUserStat(userJoke.getUserId(), null)));
+        } catch (OutOfJokeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private List<UserStat> mapToUserStat(Long userId, List<UserStat> existing) throws OutOfJokeException {
         if (existing == null || existing.stream().noneMatch(userStat -> userStat.getUser().getId().equals(userId))) {
-            final Optional<User> user = userRepository.findById(userId);
-            return user.map(value -> Collections.singletonList(new UserStat(value, 1))).orElseThrow(OutOfJokeException::new);
+            return createNewUserStat(userId);
         } else {
-            existing.forEach(userStat -> {
-                if (userStat.getUser().getId().equals(userId)) {
-                    userStat.setJokeCount(userStat.getJokeCount() + 1);
-                }
-            });
+            updateExistingUserStat(userId, existing);
             return existing;
         }
+    }
+
+    private static void updateExistingUserStat(Long userId, List<UserStat> existing) {
+        existing.forEach(userStat -> {
+            if (userStat.getUser().getId().equals(userId)) {
+                userStat.setJokeCount(userStat.getJokeCount() + 1);
+            }
+        });
+    }
+
+    private List<UserStat> createNewUserStat(Long userId) {
+        final Optional<User> user = userRepository.findById(userId);
+        return user.map(value -> Collections.singletonList(new UserStat(value, 1))).orElseThrow(OutOfJokeException::new);
     }
 
     @Scheduled(fixedDelay = 60000)
