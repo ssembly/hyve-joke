@@ -5,7 +5,7 @@ Accept: application/json
 
 GET http://localhost:8081/api/jokes/random/5
 Accept: application/json
-Authorization: 1 ## UserId
+Authorization: 1 ## userId or username
 
 ###
 
